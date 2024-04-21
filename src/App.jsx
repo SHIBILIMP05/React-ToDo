@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import List from "./List";
 import { toast } from "sonner";
@@ -6,34 +6,76 @@ import { toast } from "sonner";
 function App() {
   const [data, setData] = useState("");
   const [list, setList] = useState([]);
-  const [select,setSelect]=useState("All")
+  const [select, setSelect] = useState("All");
+  const [listData, setListData] = useState([]);
+  const [edit, setEdit] = useState("");
+  const [index, setIndex] = useState("");
 
   const handleList = () => {
     const exist = list.filter((val) => val.value === data);
     if (!data.trim()) {
-      toast.error("not aksdjflidsf");
+      toast.error("Input field cannot be empty or don't start with space");
       return;
     }
     if (exist.length !== 0) {
       toast.warning("Task already exists");
       return;
     }
-    setList([{ id: Date.now(), value: data, date: new Date() },...list, ]);
+    setList([
+      { id: Date.now(), value: data, date: new Date(), isComplete: false },
+      ...list,
+    ]);
     setData("");
   };
   const onDelete = (id) => {
     const newList = list.filter((data) => data.id !== id);
     setList(newList);
   };
+  const taskHandle = (evnt, index) => {
+    const value = evnt.target.checked;
+    list[index].isComplete = value;
+    setList([...list]);
+  };
+  const onEdit = (index) => {
+    setEdit(list[index]);
+    setData(list[index].value);
+    setIndex(index);
+  };
+  const handleEdit = () => {
+    const exist = list.filter((val) => val.value === data);
+    if (!data.trim()) {
+      toast.error("Input field cannot be empty or don't start with space");
+      return;
+    }
+    if (exist.length !== 0) {
+      toast.warning("Task already exists");
+      return;
+    }
+    list[index].value = data;
+    setData("");
+    setEdit("");
+  };
+  useEffect(() => {
+    if (select === "All") {
+      console.log(listData);
+      setListData(list);
+    } else if (select === "Pending") {
+      const filter = list.filter((data) => data.isComplete !== true);
+      setListData(filter);
+    } else if (select === "Completed") {
+      const filter = list.filter((data) => data.isComplete !== false);
+      setListData(filter);
+    }
+  }, [select, list]);
   return (
-    <div className="h-screen w-screen flex justify-center items-center bg-B3">
-      <div className="font-Lexend container p-5 rounded-2xl min-h-[750px] w-[1600px] justify-center content-center bg-B2">
+    <div className="h-screen w-screen flex justify-center items-center bg-gradient-to-br from-purple-600 to-black">
+      <div className="font-Lexend container p-5 rounded-2xl min-h-[750px] w-[1600px] justify-center content-center backdrop-blur-sm bg-opacity-20 bg-C6">
         <div className="  text-white w-5/6 mx-auto relative bottom-5 text-6xl ">
-          ToDo
+          To<span className="">Do</span>
         </div>
         <div className=" w-5/6 flex gap-6 h-[600px] mx-auto">
-          <div className="rounded-3xl bg-B1 w-[25%] h-full">
-            <div className="relative left-8 top-7 text-white text-xl font-google1 font-semibold flex items-center">
+          <div className="rounded-3xl bg-C2 w-[25%] h-full">
+            <div className="relative left-8 top-7 text-C5 text-xl font-google1 font-semibold flex items-center">
               <span>Filters</span>
               <span className="mx-36">
                 <svg
@@ -52,8 +94,13 @@ function App() {
                 </svg>
               </span>
             </div>
-            <div className="p-3 relative top-8 left-6">
-              <div onClick={()=>setSelect("All")} className={ `text-white ${select=="All" && "bg-B2" } cursor-pointer w-[225px] h-[33px] mt-3 rounded-md flex items-center pl-3`}>
+            <div className="text-C4 p-3 relative top-8 left-6">
+              <div
+                onClick={() => {
+                  setSelect("All");
+                }}
+                className={` ${select == "All" && "bg-B2"} cursor-pointer w-[225px] h-[33px] mt-3 rounded-md flex items-center pl-3`}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -70,7 +117,10 @@ function App() {
                 </svg>
                 <span className="mx-2">All</span>
               </div>
-              <div onClick={()=>setSelect("Pending")} className={` text-white ${select =="Pending" && "bg-B2"} cursor-pointer w-[225px] h-[33px] mt-3 rounded-md flex items-center pl-3`}>
+              <div
+                onClick={() => setSelect("Pending")}
+                className={`  ${select == "Pending" && "bg-B2"} cursor-pointer w-[225px] h-[33px] mt-3 rounded-md flex items-center pl-3`}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -88,7 +138,10 @@ function App() {
 
                 <span className="mx-2">Pending</span>
               </div>
-              <div onClick={()=>setSelect("Completed")} className= {`text-white ${select == "Completed" && "bg-B2"} cursor-pointer w-[225px] h-[33px] mt-3 rounded-md flex items-center pl-3`}>
+              <div
+                onClick={() => setSelect("Completed")}
+                className={` ${select == "Completed" && "bg-B2"} cursor-pointer w-[225px] h-[33px] mt-3 rounded-md flex items-center pl-3`}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -108,9 +161,9 @@ function App() {
               </div>
             </div>
           </div>
-          <div className="rounded-3xl bg-B1 w-[75%] h-full">
-            <div className="text-white px-7 py-6 text-lg">
-              <span>Count ( 6 )</span>
+          <div className="rounded-3xl bg-C2 w-[75%] h-full">
+            <div className="text-C5 px-7 py-6 text-lg">
+              <span>Count ( {listData.length} )</span>
             </div>
             <form>
               <div className="flex w-[85%] h-10 mx-8 ">
@@ -122,40 +175,71 @@ function App() {
                   type="text"
                   name="text"
                 />
-                <div className="mx-5 rounded-lg w-32 h-10 bg-A3">
-                  <button
-                    onClick={handleList}
-                    type="button"
-                    className="h-full w-full flex items-center justify-center "
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-6 h-6"
+                {edit ? (
+                  <div className="mx-5 rounded-lg w-32 h-10 bg-C5">
+                    <button
+                      onClick={handleEdit}
+                      type="button"
+                      className="h-full w-full flex items-center justify-center "
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                      />
-                    </svg>
-                    <span className="mx-2">Add</span>
-                  </button>
-                </div>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                        />
+                      </svg>
+
+                      <span className="mx-2">Edit</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="mx-5 rounded-lg w-32 h-10 bg-C1">
+                    <button
+                      onClick={handleList}
+                      type="button"
+                      className="h-full w-full flex items-center justify-center "
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                        />
+                      </svg>
+                      <span className="mx-2">Add</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </form>
             <div className=" overflow-y-scroll grid grid-cols-3 gap-x-3 w-[90%] h-[70%] mx-8 my-6 pt-10">
-              {list.map((data) => {
+              {listData.map((data, index) => {
                 return (
                   <List
                     key={data.id}
+                    index={index}
                     onDelete={onDelete}
+                    taskHandle={taskHandle}
                     value={data.value}
                     id={data.id}
                     date={data.date}
+                    isComplete={data.isComplete}
+                    onEdit={onEdit}
                   />
                 );
               })}
