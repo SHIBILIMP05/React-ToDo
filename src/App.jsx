@@ -13,13 +13,7 @@ function App() {
 
   const handleList = () => {
     const exist = list.filter((val) => val.value === data);
-    if (!data.trim()) {
-      toast.error("Input field cannot be empty or don't start with space");
-      return;
-    }
-    if (exist.length !== 0) {
-      toast.warning("Task already exists");
-      return;
+    if (!data.trim()) {pt-10
     }
     setList([
       { id: Date.now(), value: data, date: new Date(), isComplete: false },
@@ -29,6 +23,7 @@ function App() {
   };
   const onDelete = (id) => {
     const newList = list.filter((data) => data.id !== id);
+    toast.success("Task is Deleted")
     setList(newList);
   };
   const taskHandle = (evnt, index) => {
@@ -102,7 +97,7 @@ function App() {
                 className={` ${select == "All" && "bg-B2"} cursor-pointer w-[225px] h-[33px] mt-3 rounded-md flex items-center pl-3`}
               >
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns="http://www.w3.org/2000/svg"pt-10
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
@@ -227,7 +222,7 @@ function App() {
                 )}
               </div>
             </form>
-            <div className=" overflow-y-scroll grid grid-cols-3 gap-x-3 w-[90%] h-[70%] mx-8 my-6 pt-10">
+            <div className=" overflow-y-scroll grid grid-cols-3 gap-x-3 gap-y-3 w-[90%] h-[70%] m-10">
               {listData.map((data, index) => {
                 return (
                   <List
