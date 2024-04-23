@@ -27,6 +27,29 @@ export default {
      
     },
   },
-  plugins: [],
+  plugins: [
+    function({addUtilities}){
+      const nweUtilities = {
+        ".scrollbar-thin":{
+          scrollbarWidth : "thin",
+          scrollbarColor : "white"
+        },
+        ".scrollbar-webkit":{
+          "&::-webkit-scrollbar" : {
+            width:"8px"
+          },
+          "&::-webkit-scrollbar-track" : {
+            background:"white"
+          },
+          "&::-webkit-scrollbar-thumb" : {
+            backgroundColor:"red",
+            borderRadius:"20px",
+            border:"1px solid white"
+          }
+        }
+      }
+      addUtilities(nweUtilities,["responsive","hover"])
+    }
+  ],
 }
 
