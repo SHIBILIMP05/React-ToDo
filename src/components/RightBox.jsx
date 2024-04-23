@@ -69,7 +69,7 @@ function RightBox({
             //   onChange={handleData}
             value={data}
             onChange={(e) => setData(e.target.value)}
-            className="rounded-lg h-full w-full "
+            className="rounded-lg h-full w-full pl-2 "
             type="text"
             name="text"
           />
@@ -125,7 +125,7 @@ function RightBox({
           )}
         </div>
       </form>
-      <div className=" overflow-y-scroll grid grid-cols-3 gap-x-3 gap-y-3 w-[90%] h-[70%] m-10">
+      <div className=" overflow-auto .scrollbar-thin .scrollbar-webkit grid grid-cols-3 gap-x-3 gap-y-3 w-[90%] h-[70%] m-10">
         {listData.map((data, index) => {
           return (
             <List
